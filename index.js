@@ -4,6 +4,7 @@ const path = require('path');
 const morgan = require('morgan'); 
 const bcrypt = require('bcryptjs'); 
 const db = require('./config/db'); 
+require('dotenv').config();
 
 // 1. استيراد الـ Routes
 const authRoutes = require('./routes/authRoutes');
