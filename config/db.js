@@ -1,32 +1,34 @@
-const mysql = require('mysql2/promise');
+const mysql = require('mysql2');
 
+// 🚀 إنشاء الـ Pool باستخدام الهيكل التقليدي وتفعيل الـ SSL بشكل إجباري ومضمون
 const pool = mysql.createPool({
-  // استخدام process.env لقراءة البيانات من Render
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  
-  // إعدادات الـ Pool
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-
-  // إعدادات SSL ضرورية جداً للاتصال بـ Aiven
+  port: parseInt(process.env.DB_PORT) || 14916,
+  // 🔥 الصيغة الصريحة والمضمونة لتخطي حظر الاتصال الآمن في سيرفرات Aiven
   ssl: {
     rejectUnauthorized: false
-  }
+  },
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-// اختبار الاتصال عند بدء التشغيل (اختياري ولكنه مفيد)
-pool.getConnection()
-  .then(connection => {
-    console.log('✅ Connected to Aiven Cloud MySQL successfully!');
-    connection.release();
+// تحويل الـ pool لدعم الـ async/await والـ Promises بشكل سليم
+const promisePool = pool.promise();
+
+// اختبار الاتصال فوراً عند التشغيل والطباعة في الـ Terminal
+promisePool.getConnection()
+  .then(conn => {
+    console.log('✅==================================================✅');
+    console.log('🚀 Connected to Aiven Cloud MySQL successfully!');
+    console.log('✅==================================================✅');
+    conn.release();
   })
   .catch(err => {
     console.error('❌ Database connection failed:', err.message);
   });
 
-module.exports = pool;
+module.exports = promisePool;
