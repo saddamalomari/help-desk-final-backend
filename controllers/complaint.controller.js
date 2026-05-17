@@ -1,5 +1,5 @@
 const db = require('../config/db');
-const { analyzeComplaintPriority } = require('../services/aiService'); // استيراد خدمة الذكاء الاصطناعي
+const { analyzeComplaintPriority } = require('../services/aiService'); 
 
 exports.addComplaint = async (req, res) => {
     try {

@@ -1,7 +1,7 @@
 const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require("@google/generative-ai");
 
 // نصيحة: استخدم dotenv لحماية مفتاحك ولا تضعه مباشرة في الكود
-const genAI = new GoogleGenerativeAI("YOUR_API_KEY_HERE");
+const genAI = new GoogleGenerativeAI("AIzaSyAz1cIkgdRjnXQpk6LcxtIBywc1CPVYGzk");
 
 async function analyzeComplaintPriority(title, description) {
     try {
@@ -51,3 +51,6 @@ async function analyzeComplaintPriority(title, description) {
         return 'medium'; 
     }
 }
+module.exports = {
+    analyzeComplaintPriority
+};
