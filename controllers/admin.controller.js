@@ -20,10 +20,11 @@ exports.getDashboardStats = async (req, res) => {
 };
 
 // 2. جلب أحدث الشكاوى
+
 exports.getRecentTickets = async (req, res) => {
     try {
         const queryText = `
-            SELECT c.id, c.title, c.status, c.category, DATE_FORMAT(c.created_at, '%Y-%m-%d') as created_at, u.full_name as user_name 
+            SELECT c.id, c.title, c.status, c.category, c.created_at, u.full_name as user_name 
             FROM complaints c
             LEFT JOIN users u ON c.user_id = u.id
             ORDER BY c.created_at DESC 
@@ -32,10 +33,15 @@ exports.getRecentTickets = async (req, res) => {
         const [complaints] = await db.query(queryText);
         res.status(200).json(complaints);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error("❌ الخطأ الداخلي هو:", error);
+        
+        // 🎯 تعديل رئيسي: إرسال تفاصيل الخطأ الحقيقي في الـ JSON لكي يظهر على شاشة الفلاتر فوراً
+        res.status(500).json({ 
+            error: true,
+            message: `MySQL Error: ${error.message}` 
+        });
     }
 };
-
 // 3. جلب الموظفين لشاشة إدارة الموظفين في الفلاتر
 exports.getEmployees = async (req, res) => {
     try {
