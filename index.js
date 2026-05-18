@@ -14,17 +14,16 @@ const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 
-// 2. Middlewares
+// 2. Middlewares (يجب أن تكون قبل المسارات دائماً لقراءة البيانات القادمة من الفلاتر)
 app.use(cors());
 app.use(morgan('dev')); 
 app.use(express.json({ limit: '50mb' })); 
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
-app.use('/api/admin', adminRoutes);
 
 // 3. إعداد مجلد المرفقات
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// --- 🎯 راوت المسار الرئيسي (هذا سيحذف الموقع القديم ويظهر رسالة الـ API) ---
+// --- 🎯 راوت المسار الرئيسي (فحص تشغيل السيرفر) ---
 app.get('/', (req, res) => {
     res.status(200).json({
         success: true,
@@ -57,10 +56,11 @@ app.get('/fix-admin-now', async (req, res) => {
     }
 });
 
-// 4. تعريف المسارات (Endpoints)
-app.use('/auth', authRoutes);
+// 4. تعريف المسارات (Endpoints) الموحدة بـ /api لتتطابق مع الفلاتر 100%
+app.use('/api/auth', authRoutes);         // تفعيل /api/auth لشاشة المواطن والتسجيل
 app.use('/api/complaints', complaintRoutes); 
 app.use('/api/employee', employeeRoutes);
+app.use('/api/admin', adminRoutes);       // تفعيل مسار الأدمن الموحد في مكانه الصحيح
 
 // 5. Global Error Handler
 app.use((err, req, res, next) => {
@@ -71,7 +71,7 @@ app.use((err, req, res, next) => {
     });
 });
 
-// 6. تشغيل السيرفر (تعديل الـ PORT ليعمل على Render تلقائياً)
+// 6. تشغيل السيرفر
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log("-----------------------------------------");
