@@ -45,4 +45,18 @@ exports.getEmployees = async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
+
+
+};
+
+// 4. جلب قائمة التصنيفات الفريدة المتوفرة في النظام
+exports.getCategories = async (req, res) => {
+    try {
+        const [categories] = await db.query('SELECT DISTINCT category FROM complaints WHERE category IS NOT NULL');
+        // تحويل النتيجة إلى مصفوفة نصوص بسيطة لتسهيل قراءتها في الفلاتر
+        const categoryList = categories.map(c => c.category);
+        res.status(200).json(categoryList);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
