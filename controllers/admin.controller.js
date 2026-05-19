@@ -49,12 +49,17 @@ exports.getEmployees = async (req, res) => {
 
 };
 
-// 4. جلب قائمة التصنيفات الفريدة المتوفرة في النظام
+// 4. جلب قائمة التصنيفات المحدثة لتتوافق مع كائنات الفلاتر 100%
 exports.getCategories = async (req, res) => {
     try {
         const [categories] = await db.query('SELECT DISTINCT category FROM complaints WHERE category IS NOT NULL');
-        // تحويل النتيجة إلى مصفوفة نصوص بسيطة لتسهيل قراءتها في الفلاتر
-        const categoryList = categories.map(c => c.category);
+        
+        // 🎯 قمنا هنا بتحويل المصفوفة إلى كائنات تحتوي على حقل 'name' لحل مشكلة الـ TypeError
+        const categoryList = categories.map((c, index) => ({
+            id: index + 1, // إعطاء رقم تعريفي تلقائي مؤقت للتصميم
+            name: c.category
+        }));
+        
         res.status(200).json(categoryList);
     } catch (error) {
         res.status(500).json({ error: error.message });
