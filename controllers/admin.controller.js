@@ -19,8 +19,7 @@ exports.getDashboardStats = async (req, res) => {
     }
 };
 
-// 2. جلب أحدث الشكاوى
-
+// 2. جلب أحدث الشكاوى المتوافقة بالكامل مع بنية الداتابيز والفلاتر
 exports.getRecentTickets = async (req, res) => {
     try {
         const queryText = `
@@ -33,15 +32,11 @@ exports.getRecentTickets = async (req, res) => {
         const [complaints] = await db.query(queryText);
         res.status(200).json(complaints);
     } catch (error) {
-        console.error("❌ الخطأ الداخلي هو:", error);
-        
-        // 🎯 تعديل رئيسي: إرسال تفاصيل الخطأ الحقيقي في الـ JSON لكي يظهر على شاشة الفلاتر فوراً
-        res.status(500).json({ 
-            error: true,
-            message: `MySQL Error: ${error.message}` 
-        });
+        console.error("❌ الخطأ الداخلي في جلب التذاكر الأخيرة:", error.message);
+        res.status(500).json({ error: error.message });
     }
 };
+
 // 3. جلب الموظفين لشاشة إدارة الموظفين في الفلاتر
 exports.getEmployees = async (req, res) => {
     try {
