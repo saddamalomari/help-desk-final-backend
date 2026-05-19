@@ -65,3 +65,49 @@ exports.getCategories = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+// 5. إضافة موظف جديد مباشرة بالباسورد الصريح (شغل نهائي ومباشر)
+exports.addEmployee = async (req, res) => {
+    try {
+        const { full_name, email, phone, password } = req.body;
+
+        // استعلام الإدخال المباشر لجدول المستخدمين بوظيفة موظف
+        const queryText = `
+            INSERT INTO users (full_name, email, phone, password, role) 
+            VALUES (?, ?, ?, ?, 'employee')
+        `;
+        
+        await db.query(queryText, [full_name, email, phone, password]);
+        
+        res.status(201).json({ 
+            success: true, 
+            message: "✅ تم إضافة الموظف وتخزين البيانات مباشرة بنجاح" 
+        });
+    } catch (error) {
+        console.error("❌ خطأ أثناء إضافة الموظف:", error.message);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// 6. إضافة تصنيف جديد مباشرة إلى النظام
+exports.addCategory = async (req, res) => {
+    try {
+        const { name } = req.body;
+        
+        // إدخال التصنيف مباشرة عبر تذكرة مرجعية للأدمن (user_id = 5) بحالة مفسرة ومغلقة 
+        // لكي يقرأها النظام فوراً وبشكل حقيقي في القائمة دون التأثير على الشكاوى النشطة
+        const queryText = `
+            INSERT INTO complaints (user_id, title, description, category, status, priority) 
+            VALUES (5, 'تهيئة نظام', 'تفعيل تصنيف جديد في النظام', ?, 'resolved', 'low')
+        `;
+        
+        await db.query(queryText, [name]);
+        
+        res.status(201).json({ 
+            success: true, 
+            message: "✅ تم تسجيل وتفعيل التصنيف الجديد مباشرة في النظام" 
+        });
+    } catch (error) {
+        console.error("❌ خطأ أثناء إضافة التصنيف:", error.message);
+        res.status(500).json({ error: error.message });
+    }
+};
